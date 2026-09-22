@@ -11,18 +11,18 @@ The source can be either a mounted FAT boot partition or a local backup of one. 
 For a mounted card:
 
 ```sh
-./scripts/capture-boot-volume.sh /Volumes/EMU68 chris cos-current --kernel KERNEL/Emu68-pistorm
+./scripts/capture-boot-volume.sh /Volumes/EMU68 chris cos-current
 ```
 
 For a backup folder:
 
 ```sh
-./scripts/capture-boot-volume.sh /path/to/EMU68-backup chris backup-2026-09-22 --kernel KERNEL/Emu68-pistorm
+./scripts/capture-boot-volume.sh /path/to/EMU68-backup chris backup-2026-09-22
 ```
 
 The command reads the supplied boot tree, creates a draft profile under `profiles/drafts/`, copies `CONFIG.TXT` and `Boot/CMDLINE.TXT` as text snapshots, and fingerprints only the selected kernel, files named by `initramfs`, and enabled overlays. It never writes to the supplied source folder.
 
-GPIO conditions cannot be evaluated from a mounted card or backup folder, so `--kernel` is required. If a profile uses a conditional `initramfs` line, supply that value explicitly with `--initramfs`.
+The CDTV registry automatically selects `kernel=kernel/Emu68-pistorm` and ignores PiStorm16/PiStorm32-lite GPIO branches. A boot tree without that classic PiStorm target is rejected. If a profile uses a conditional `initramfs` line, supply that value explicitly with `--initramfs`.
 
 ## Profile layout
 

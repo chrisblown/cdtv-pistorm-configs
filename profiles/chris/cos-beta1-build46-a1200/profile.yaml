@@ -45,4 +45,4 @@ test:
   boot_result: untested
   cd_access: untested
   scsi_card: untested
-  notes: "Captured read-only from a boot tree. GPIO-selected kernel supplied explicitly."
+  notes: "Captured read-only from a boot tree. PiStorm16 and PiStorm32-lite kernel branches are not applicable to CDTV."

@@ -3,11 +3,11 @@
 set -eu
 
 usage() {
-  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id --kernel RELATIVE/PATH [--initramfs comma,separated,paths]" >&2
+  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id [--initramfs comma,separated,paths]" >&2
   exit 64
 }
 
-[ "$#" -ge 5 ] || usage
+[ "$#" -ge 3 ] || usage
 source_tree=$1
 author=$2
 profile_id=$3
@@ -17,7 +17,6 @@ selected_initramfs=
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --kernel) [ "$#" -ge 2 ] || usage; selected_kernel=$2; shift 2 ;;
     --initramfs) [ "$#" -ge 2 ] || usage; selected_initramfs=$2; shift 2 ;;
     *) usage ;;
   esac
@@ -34,9 +33,14 @@ if [ ! -d "$source_tree" ] || [ ! -r "$config" ] || [ ! -r "$cmdline_file" ]; th
   exit 66
 fi
 
+selected_kernel=$(awk '
+  /^[[:space:]]*kernel[[:space:]]*=[[:space:]]*kernel\/Emu68-pistorm[[:space:]]*$/ {
+    sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); print; exit
+  }
+' "$config")
 if [ -z "$selected_kernel" ]; then
-  echo "A selected --kernel is required because GPIO conditions cannot be evaluated from a Mac or backup folder." >&2
-  exit 64
+  echo "This CDTV registry requires a classic PiStorm target: kernel=kernel/Emu68-pistorm." >&2
+  exit 65
 fi
 
 if [ -z "$selected_initramfs" ]; then
@@ -148,7 +152,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "  boot_result: untested"
   echo "  cd_access: untested"
   echo "  scsi_card: untested"
-  echo "  notes: \"Captured read-only from a boot tree. GPIO-selected kernel supplied explicitly.\""
+  echo "  notes: \"Captured read-only from a boot tree. PiStorm16 and PiStorm32-lite kernel branches were ignored.\""
 } > "$draft/profile.yaml"
 
 chmod 644 "$draft/config.txt" "$draft/cmdline.txt" "$draft/profile.yaml"
