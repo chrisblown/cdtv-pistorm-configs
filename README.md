@@ -98,5 +98,32 @@ Maintainers review the configuration for reproducibility and confirm that it con
 To check that a local boot tree contains every fingerprinted active asset from a profile:
 
 ```sh
-./scripts/verify-profile-files.sh profiles/chris/cos-beta1-build46-a1200/profile.yaml /Volumes/EMU68
+./scripts/verify-profile-files.sh profiles/chris/cos-beta1-build46-a1200-single-kernel/profile.yaml /Volumes/EMU68
 ```
+
+## Restore a profile
+
+The restore helper reconstructs a profile from files already available in a local source tree. It never downloads ROMs or binaries. SHA-256 is the artifact identity: source filenames may differ from the filenames in the profile, provided their bytes match.
+
+Verify-only mode is the default:
+
+```sh
+./scripts/restore-profile.sh \
+  profiles/chris/cos-beta1-build46-a1200-single-kernel/profile.yaml \
+  /path/to/local-boot-file-library \
+  /Volumes/EMU68
+```
+
+It searches the source tree for every fingerprinted kernel, initramfs asset, and overlay by SHA-256 before printing the planned replacements. It does not modify the destination in this mode.
+
+To restore, add `--commit`. The script asks for `Y/N` confirmation, saves every destination file it would replace to a timestamped backup outside the destination tree, restores assets first, then `CONFIG.TXT` and `Boot/CMDLINE.TXT`, and verifies copied SHA-256 values afterward:
+
+```sh
+./scripts/restore-profile.sh \
+  profiles/chris/cos-beta1-build46-a1200-single-kernel/profile.yaml \
+  /path/to/local-boot-file-library \
+  /Volumes/EMU68 \
+  --commit
+```
+
+The helper refuses a profile whose `config.txt` snapshot has zero or multiple active `kernel=` statements. It cannot restore AmigaDOS-partition files such as `VideoCore.card`; those require a separate Amiga filesystem workflow.

@@ -11,3 +11,6 @@
 # macOS metadata
 .DS_Store
 ._*
+
+# Local restore backups
+backups/

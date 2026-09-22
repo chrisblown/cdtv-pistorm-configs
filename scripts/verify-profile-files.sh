@@ -13,18 +13,27 @@ sha256() {
 }
 
 failed=0
+resolve_source_by_sha() {
+  expected_sha=$1
+  matches=$( (find "$source_tree" -type f ! -name '._*' -print 2>/dev/null || true) | LC_ALL=C sort | while IFS= read -r candidate; do
+    if [ "$(sha256 "$candidate")" = "$expected_sha" ]; then printf '%s\n' "$candidate"; fi
+  done)
+  printf '%s\n' "$matches" | awk 'NF { print; exit }'
+}
+
 path=
 while IFS= read -r line; do
   case "$line" in
     '  - path: '*) path=$(printf '%s' "${line#'  - path: '}" | sed 's/^"//; s/"$//') ;;
     '    sha256: '*)
       expected=${line#'    sha256: '}
-      if [ -z "$path" ] || [ ! -r "$source_tree/$path" ]; then
+      source_file=$(resolve_source_by_sha "$expected")
+      if [ -z "$path" ] || [ -z "$source_file" ]; then
         echo "MISSING  $path"
         failed=1
       else
-        actual=$(sha256 "$source_tree/$path")
-        if [ "$actual" = "$expected" ]; then echo "MATCH    $path"; else echo "MISMATCH $path"; failed=1; fi
+        source_relative=${source_file#"$source_tree"/}
+        echo "MATCH    $path <- $source_relative"
       fi
       path=
       ;;

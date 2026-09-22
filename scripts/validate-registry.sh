@@ -14,6 +14,17 @@ for profile in "$root"/profiles/*/*/profile.yaml "$root"/profiles/drafts/*/profi
     echo "Missing or malformed file fingerprint: $profile" >&2
     failed=1
   fi
+  config_snapshot="$(dirname "$profile")/config.txt"
+  if [ ! -r "$config_snapshot" ]; then
+    echo "Missing config snapshot: $profile" >&2
+    failed=1
+  else
+    kernel_count=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { count++ } END { print count + 0 }' "$config_snapshot")
+    if [ "$kernel_count" -ne 1 ]; then
+      echo "Profile config must contain exactly one kernel statement: $profile" >&2
+      failed=1
+    fi
+  fi
 done
 
 if find "$root" -type f \( -iname '*.rom' -o -iname '*.img' -o -iname '*.hdf' -o -iname '*.adf' -o -iname '*.card' -o -iname '*.dtbo' \) | grep -q .; then
