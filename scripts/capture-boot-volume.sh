@@ -149,6 +149,8 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "  status: pending"
   echo "  boot_result: untested"
   echo "  cd_access: untested"
+  echo "  audio_cd: untested"
+  echo "  cd_plus_g: untested"
   echo "  scsi_card: untested"
   echo "  notes: \"Captured read-only from a boot tree with a single active kernel statement.\""
 } > "$draft/profile.yaml"

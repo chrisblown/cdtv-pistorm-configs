@@ -3,5 +3,7 @@ tested_at: 2026-09-22
 result:
   boot_result: booted | looped | failed | untested
   cd_access: working | freezes | untested
+  audio_cd: working | failed | untested
+  cd_plus_g: working | failed | untested
   scsi_card: visible | missing | untested
   notes: ""

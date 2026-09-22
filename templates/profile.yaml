@@ -20,5 +20,7 @@ test:
   status: pending
   boot_result: untested
   cd_access: untested
+  audio_cd: untested
+  cd_plus_g: untested
   scsi_card: untested
   notes: ""
