@@ -89,6 +89,46 @@ Maintainers review the configuration for reproducibility and confirm that it con
 - One profile represents one boot configuration. Add a new profile for a materially different test.
 - Mark an untested capture as `pending`; record observed outcomes after hardware testing.
 
+## Script reference
+
+All scripts are POSIX shell and run locally. None downloads ROMs, kernels, or other boot binaries.
+
+### `capture-boot-volume.sh`
+
+```sh
+./scripts/capture-boot-volume.sh SOURCE_TREE AUTHOR PROFILE_ID \
+  [--machine CDTV|A570|A690] [--initramfs comma,separated,paths]
+```
+
+Reads `SOURCE_TREE` only and creates `profiles/drafts/AUTHOR-PROFILE_ID/`. It copies the two text snapshots and fingerprints exactly the selected `kernel=`, active `initramfs` assets, and `dtoverlay` files. `SOURCE_TREE` must be an absolute path containing readable `CONFIG.TXT` and `Boot/CMDLINE.TXT`. It accepts only one active `kernel=` statement. If the required initramfs is conditional or cannot be inferred, provide its exact comma-separated value with `--initramfs`.
+
+### `validate-registry.sh`
+
+```sh
+./scripts/validate-registry.sh
+```
+
+Checks every committed or draft profile for schema version 1, well-formed SHA-256 entries, a readable `config.txt` snapshot with exactly one `kernel=` statement, and prohibited binary files in the repository. Run it before committing. It validates registry structure; it does not verify that your local ROM library contains the recorded files.
+
+### `verify-profile-files.sh`
+
+```sh
+./scripts/verify-profile-files.sh PROFILE.yaml SOURCE_TREE
+```
+
+Read-only check. It recursively searches only `SOURCE_TREE` and its subdirectories for a file matching each profile SHA-256, then reports the matching local path. Filenames and case do not have to match the profile: identical bytes are sufficient. This is useful before a restore or when comparing a backup against a profile.
+
+### `restore-profile.sh`
+
+```sh
+./scripts/restore-profile.sh PROFILE.yaml SOURCE_TREE DESTINATION_TREE \
+  [--commit|-commit] [--backup-dir /absolute/path]
+```
+
+`SOURCE_TREE` and `DESTINATION_TREE` must be different absolute paths. By default this is verify-only: it recursively searches only the supplied source tree by SHA-256, lists all target paths it would replace, and changes nothing. With `--commit`, it requests a `Y/N` confirmation, backs up each replaced boot asset plus `CONFIG.TXT` and `Boot/CMDLINE.TXT`, restores the matched assets under the profile's required filenames, then post-verifies their hashes. The default backup location is a timestamped directory beneath `backups/`; use `--backup-dir` to choose another absolute location outside the destination tree.
+
+The restore script operates only on the FAT boot partition. It cannot install files on the AmigaDOS partition, including `LIBS:Picasso96/VideoCore.card`.
+
 ## Validate
 
 ```sh
