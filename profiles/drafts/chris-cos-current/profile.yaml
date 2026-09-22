@@ -1,0 +1,117 @@
+schema_version: 1
+id: cos-current
+author: chris
+captured_at: 2026-09-22
+
+hardware:
+  machine: unknown
+  pistorm: unknown
+  raspberry_pi: unknown
+
+boot:
+  config_snapshot: config.txt
+  cmdline_snapshot: cmdline.txt
+  initramfs_raw: "roms/cdtv236b46.rom,roms/kick323-a1200.rom"
+  overlays:
+    - "sdhc,unit0=rw"
+    - "z2ram,size=0"
+  cmdline: "z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw"
+
+files:
+  - path: "KERNEL/Emu68-pistorm"
+    size_bytes: 4239392
+    sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
+  - path: "KERNEL/Emu68-pistorm16"
+    size_bytes: 2232352
+    sha256: 6940bb476510f29c1651fb2fdbff230b6b15a62dc6f3291e9b1b043396f9ee9b
+  - path: "KERNEL/Emu68-pistorm32lite"
+    size_bytes: 2211872
+    sha256: 262afc1473299d1e95cffd6ebff6427b4b737776e8380d264cf52bdb1878a9e0
+  - path: "ROMS/512KB/caffeine_jingle.rom"
+    size_bytes: 524288
+    sha256: a1194a1a20c6ceca84b9d785c36a737260e409fb34867770230a57771fe12035
+  - path: "ROMS/512KB/caffeine_nojingle.rom"
+    size_bytes: 524288
+    sha256: 3b9db62c584357529f68bd05e6ba3fb7a746bb74e25d7735ed8be2453f60c880
+  - path: "ROMS/AROS.ROM"
+    size_bytes: 1048576
+    sha256: df315ca0ac6acd4cbe0f85edb6c9fc7c268625f1276251ffa2376ca8f8bf3f7f
+  - path: "ROMS/Caffeinerom.txt"
+    size_bytes: 2300
+    sha256: 83ee7917f94cb6002c83d52d055eb6f419ce69ba8a36941cc38050d99e88ab10
+  - path: "ROMS/DiagROM.rom"
+    size_bytes: 524288
+    sha256: 5f7e9c4cf2d3da542c39bb7af75667da3936448b802a61d8fe46d91609bbb318
+  - path: "ROMS/Logica_dialoga.rom"
+    size_bytes: 524288
+    sha256: 14f8f8e69e30c07c0ad780124f2d6404e423bf2759b93c4a8eaae7e799ab8e8c
+  - path: "ROMS/Pistorm32_check.rom"
+    size_bytes: 262144
+    sha256: a29e76d09c3014cda0406d5f5849527f34dba49e6bdb31bbf4a46d199bbe08a9
+  - path: "ROMS/caffeine_NOjingle.rom"
+    size_bytes: 1048576
+    sha256: 2f461d5c7ffe652c79ea32d9afe9584190cf2ff2192d1293ffc9967e648e89c5
+  - path: "ROMS/caffeine_jingle.rom"
+    size_bytes: 1048576
+    sha256: 62a2c04bd94933aff43f5b5c00279ed05643663ebccaf61fe40c176497375833
+  - path: "ROMS/cdtv236_beta32_E0.rom"
+    size_bytes: 1048576
+    sha256: 601d4e20972ca4961a40e0640f05e6291a2e13607160d1cc5aacb5fb4a9c66f9
+  - path: "ROMS/cdtv236b32.rom"
+    size_bytes: 524288
+    sha256: f0b1984c849569fa257d8e978976500a272d5797afd54891833d748ca2e10e93
+  - path: "ROMS/cdtv236b32db.rom"
+    size_bytes: 524288
+    sha256: 2af74bcf8cee9393b938df9f4dbcd8cad6d6d9965bf235d140fdbf28bd497a0b
+  - path: "ROMS/cdtv236b46.rom"
+    size_bytes: 524288
+    sha256: cf21cb5c09ce5f6c892d9ff534352abcceb338c1cc355340e886e45e186517c0
+  - path: "ROMS/kick310.rom"
+    size_bytes: 524288
+    sha256: 6d43840d4099a74170ea0f0425b6257c3891ebcaa39c4d1840075a9ab22b5707
+  - path: "ROMS/kick323-a1200.rom"
+    size_bytes: 524288
+    sha256: ffcf6993c1a2df032fee1125036e2192cf29f70add547a50fc2cfff8f4fb9f7a
+  - path: "ROMS/kick323.rom"
+    size_bytes: 524288
+    sha256: e66823f4baaf2c93ea6ac600c07014ccddadc44cc58281c564baf165e2035b47
+  - path: "ROMS/ks31a1200.rom"
+    size_bytes: 524288
+    sha256: 6d43840d4099a74170ea0f0425b6257c3891ebcaa39c4d1840075a9ab22b5707
+  - path: "ROMS/logica_diagnostic_manual_v1.pdf"
+    size_bytes: 309802
+    sha256: df8fae373b1b4f3f599ec521874e026a55e48a9f166eb21bd722ab69ff93f557
+  - path: "ROMS/mt32-roms/CM32L_CONTROL.1989-12-05.v1.02.ROM"
+    size_bytes: 65536
+    sha256: 08d68695e5bff6bbcbb751d6e4453db9f5ead0b5f41e86480798a04376dfe090
+  - path: "ROMS/mt32-roms/MT32_CONTROL.1987-10-07.v1.07.ROM"
+    size_bytes: 65536
+    sha256: a73a06c23ed38370e58a11fb1b86f7ea4c547061a60d7aa62bae446235fd2dff
+  - path: "ROMS/mt32-roms/MT32_CONTROL.1988-09-30.vX.XX-patched.ROM"
+    size_bytes: 65536
+    sha256: c088c026ad99e13204ac4aa157052f443c52424cbd6394a82abd60bab4c34b91
+  - path: "ROMS/mt32-roms/cm32l_control.rom"
+    size_bytes: 65536
+    sha256: 08d68695e5bff6bbcbb751d6e4453db9f5ead0b5f41e86480798a04376dfe090
+  - path: "ROMS/mt32-roms/cm32l_pcm.rom"
+    size_bytes: 1048576
+    sha256: 0dc50190bb7ea3fb212c970346b771a511772b528801e7eda6d27efda8c40698
+  - path: "ROMS/mt32-roms/mt32_control.rom"
+    size_bytes: 65536
+    sha256: a73a06c23ed38370e58a11fb1b86f7ea4c547061a60d7aa62bae446235fd2dff
+  - path: "ROMS/mt32-roms/mt32_pcm.rom"
+    size_bytes: 524288
+    sha256: d9164063f293410cf33f2f64cdcea6893b44723fe41938e07ec9aef58b406238
+  - path: "overlays/sdhc.dtbo"
+    size_bytes: 740
+    sha256: 40a04d763d4ca8bba6c9aef187314e252b7709c41ee97f9be1b69f8ad2bff495
+  - path: "overlays/z2ram.dtbo"
+    size_bytes: 360
+    sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
+
+test:
+  status: pending
+  boot_result: untested
+  cd_access: untested
+  scsi_card: untested
+  notes: "Captured read-only from mounted boot partition."

@@ -1,0 +1,7 @@
+profile: profiles/contributor-name/profile-id
+tested_at: 2026-09-22
+result:
+  boot_result: booted | looped | failed | untested
+  cd_access: working | freezes | untested
+  scsi_card: visible | missing | untested
+  notes: ""

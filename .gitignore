@@ -1,0 +1,13 @@
+# Never commit ROMs, disk images, kernels, or Amiga-side drivers.
+*.rom
+*.ROM
+*.img
+*.hdf
+*.adf
+*.card
+*.dtbo
+*.gz
+
+# macOS metadata
+.DS_Store
+._*

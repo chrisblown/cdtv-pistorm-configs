@@ -1,0 +1,25 @@
+schema_version: 1
+id: example-profile
+author: contributor-name
+captured_at: 2026-09-22
+
+hardware:
+  machine: CDTV CD1000
+  pistorm: classic
+  raspberry_pi: unknown
+
+boot:
+  config_snapshot: config.txt
+  cmdline_snapshot: cmdline.txt
+  initramfs: []
+  overlays: []
+  cmdline: ""
+
+files: []
+
+test:
+  status: pending
+  boot_result: untested
+  cd_access: untested
+  scsi_card: untested
+  notes: ""
