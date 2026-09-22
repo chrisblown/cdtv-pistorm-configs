@@ -1,12 +1,27 @@
-# Never commit ROMs, disk images, kernels, or Amiga-side drivers.
+# Never commit ROMs, disk images, kernels, firmware, overlays, or Amiga-side drivers.
 *.rom
 *.ROM
 *.img
 *.hdf
 *.adf
+*.iso
 *.card
+*.bin
+*.elf
+*.dtb
 *.dtbo
 *.gz
+*.xz
+*.zip
+*.7z
+
+# Emu68 boot assets can be extensionless; profiles contain only their metadata.
+roms/
+ROMS/
+kernel/
+KERNEL/
+overlays/
+Emu68-*
 
 # macOS metadata
 .DS_Store
