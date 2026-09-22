@@ -3,7 +3,7 @@
 set -eu
 
 usage() {
-  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id [--initramfs comma,separated,paths]" >&2
+  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id [--machine CDTV|A570|A690] [--initramfs comma,separated,paths]" >&2
   exit 64
 }
 
@@ -14,10 +14,12 @@ profile_id=$3
 shift 3
 selected_kernel=
 selected_initramfs=
+machine=CDTV
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --initramfs) [ "$#" -ge 2 ] || usage; selected_initramfs=$2; shift 2 ;;
+    --machine) [ "$#" -ge 2 ] || usage; machine=$2; shift 2 ;;
     *) usage ;;
   esac
 done
@@ -25,6 +27,7 @@ done
 case "$source_tree" in /*) ;; *) echo "The boot-tree path must be absolute." >&2; exit 64 ;; esac
 case "$author" in *[!A-Za-z0-9._-]* ) echo "Invalid author." >&2; exit 64 ;; esac
 case "$profile_id" in *[!A-Za-z0-9._-]* ) echo "Invalid profile ID." >&2; exit 64 ;; esac
+case "$machine" in CDTV|A570|A690) ;; *) echo "Machine must be CDTV, A570, or A690." >&2; exit 64 ;; esac
 
 config="$source_tree/CONFIG.TXT"
 cmdline_file="$source_tree/Boot/CMDLINE.TXT"
@@ -123,9 +126,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   printf 'captured_at: %s\n' "$(date +%F)"
   echo
   echo "hardware:"
-  echo "  machine: unknown"
-  echo "  pistorm: unknown"
-  echo "  raspberry_pi: unknown"
+  printf '  machine: %s\n' "$machine"
   echo
   echo "boot:"
   echo "  config_snapshot: config.txt"

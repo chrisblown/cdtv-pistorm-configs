@@ -4,9 +4,7 @@ author: contributor-name
 captured_at: 2026-09-22
 
 hardware:
-  machine: CDTV CD1000
-  pistorm: classic
-  raspberry_pi: unknown
+  machine: CDTV
 
 boot:
   config_snapshot: config.txt
