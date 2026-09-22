@@ -65,33 +65,8 @@ cmdline=boot/cmdline.txt
 dtoverlay=sdhc,unit0=rw
 dtoverlay=z2ram,size=0
 initramfs roms/cdtv236b46.rom,roms/kick323-a1200.rom
- 
-# === PISTORM HARDWARE DETECTION ===
-# (These settings control which firmware loads based on your PiStorm hardware)
-gpio=0-27=ip
-gpio=0-27=pu
-
-# PiStorm32lite detection - A1200 Stealth Mode
-[gpio4=0]
-kernel=kernel/Emu68-pistorm32lite
-initramfs boot/ps32lite-stealth-firmware.gz
-[all]
-
-# Pistorm32 Normal Boot
-[gpio24=0]
-kernel=kernel/Emu68-pistorm32lite
-[all]
-
-# PiStorm16 detection
-[gpio24=1]
-kernel=kernel/Emu68-pistorm16
-[all]
-
-# Original PiStorm detection
-[gpio17=0]
 kernel=kernel/Emu68-pistorm
-[all]
-
+ 
 # === RASPBERRY PI COMPUTE MODULE 4 SETTINGS ===
 [cm4]
 # Uncomment to use external antenna (U.FL connector)

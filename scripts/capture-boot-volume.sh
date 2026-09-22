@@ -33,15 +33,12 @@ if [ ! -d "$source_tree" ] || [ ! -r "$config" ] || [ ! -r "$cmdline_file" ]; th
   exit 66
 fi
 
-selected_kernel=$(awk '
-  /^[[:space:]]*kernel[[:space:]]*=[[:space:]]*kernel\/Emu68-pistorm[[:space:]]*$/ {
-    sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); print; exit
-  }
-' "$config")
-if [ -z "$selected_kernel" ]; then
-  echo "This CDTV registry requires a classic PiStorm target: kernel=kernel/Emu68-pistorm." >&2
+kernel_count=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { count++ } END { print count + 0 }' "$config")
+if [ "$kernel_count" -ne 1 ]; then
+  echo "CONFIG.TXT must contain exactly one active kernel= statement; found $kernel_count. GPIO/multi-kernel configurations are not accepted." >&2
   exit 65
 fi
+selected_kernel=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); print; exit }' "$config")
 
 if [ -z "$selected_initramfs" ]; then
   selected_initramfs=$(awk '
@@ -152,7 +149,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "  boot_result: untested"
   echo "  cd_access: untested"
   echo "  scsi_card: untested"
-  echo "  notes: \"Captured read-only from a boot tree. PiStorm16 and PiStorm32-lite kernel branches were ignored.\""
+  echo "  notes: \"Captured read-only from a boot tree with a single active kernel statement.\""
 } > "$draft/profile.yaml"
 
 chmod 644 "$draft/config.txt" "$draft/cmdline.txt" "$draft/profile.yaml"

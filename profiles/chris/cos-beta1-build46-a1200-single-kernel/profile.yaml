@@ -1,5 +1,5 @@
 schema_version: 1
-id: cos-beta1-build46-a1200
+id: cos-beta1-build46-a1200-single-kernel
 author: chris
 captured_at: 2026-09-22
 
@@ -11,7 +11,7 @@ hardware:
 boot:
   config_snapshot: config.txt
   cmdline_snapshot: cmdline.txt
-  selected_kernel: "KERNEL/Emu68-pistorm"
+  selected_kernel: "kernel/Emu68-pistorm"
   initramfs_raw: "roms/cdtv236b46.rom,roms/kick323-a1200.rom"
   overlays:
     - "sdhc,unit0=rw"
@@ -19,7 +19,7 @@ boot:
   cmdline: "z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw"
 
 files:
-  - path: "KERNEL/Emu68-pistorm"
+  - path: "kernel/Emu68-pistorm"
     role: kernel
     size_bytes: 4239392
     sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
@@ -45,4 +45,4 @@ test:
   boot_result: untested
   cd_access: untested
   scsi_card: untested
-  notes: "Captured read-only from a boot tree. PiStorm16 and PiStorm32-lite kernel branches are not applicable to CDTV."
+  notes: "Captured read-only from a boot tree with a single active kernel statement."

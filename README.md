@@ -22,7 +22,7 @@ For a backup folder:
 
 The command reads the supplied boot tree, creates a draft profile under `profiles/drafts/`, copies `CONFIG.TXT` and `Boot/CMDLINE.TXT` as text snapshots, and fingerprints only the selected kernel, files named by `initramfs`, and enabled overlays. It never writes to the supplied source folder.
 
-The CDTV registry automatically selects `kernel=kernel/Emu68-pistorm` and ignores PiStorm16/PiStorm32-lite GPIO branches. A boot tree without that classic PiStorm target is rejected. If a profile uses a conditional `initramfs` line, supply that value explicitly with `--initramfs`.
+For reproducibility, this registry accepts only one active `kernel=` statement in `CONFIG.TXT`. GPIO/multi-kernel configurations are rejected because a mounted volume or backup does not reveal which GPIO branch booted. The kernel filename itself is unrestricted. If a profile uses a conditional `initramfs` line, supply that value explicitly with `--initramfs`.
 
 ## Profile layout
 
