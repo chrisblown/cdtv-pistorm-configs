@@ -11,7 +11,8 @@ hardware:
 boot:
   config_snapshot: config.txt
   cmdline_snapshot: cmdline.txt
-  initramfs: []
+  selected_kernel: KERNEL/Emu68-pistorm
+  initramfs_raw: "ROMS/example-extended.rom,ROMS/example-kickstart.rom"
   overlays: []
   cmdline: ""
 

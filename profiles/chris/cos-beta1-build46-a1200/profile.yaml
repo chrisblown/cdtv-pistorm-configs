@@ -1,0 +1,48 @@
+schema_version: 1
+id: cos-beta1-build46-a1200
+author: chris
+captured_at: 2026-09-22
+
+hardware:
+  machine: CDTV CD1000
+  pistorm: classic
+  raspberry_pi: unknown
+
+boot:
+  config_snapshot: config.txt
+  cmdline_snapshot: cmdline.txt
+  selected_kernel: "KERNEL/Emu68-pistorm"
+  initramfs_raw: "roms/cdtv236b46.rom,roms/kick323-a1200.rom"
+  overlays:
+    - "sdhc,unit0=rw"
+    - "z2ram,size=0"
+  cmdline: "z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw"
+
+files:
+  - path: "KERNEL/Emu68-pistorm"
+    role: kernel
+    size_bytes: 4239392
+    sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
+  - path: "roms/cdtv236b46.rom"
+    role: initramfs_1
+    size_bytes: 524288
+    sha256: cf21cb5c09ce5f6c892d9ff534352abcceb338c1cc355340e886e45e186517c0
+  - path: "roms/kick323-a1200.rom"
+    role: initramfs_2
+    size_bytes: 524288
+    sha256: ffcf6993c1a2df032fee1125036e2192cf29f70add547a50fc2cfff8f4fb9f7a
+  - path: "overlays/sdhc.dtbo"
+    role: overlay
+    size_bytes: 740
+    sha256: 40a04d763d4ca8bba6c9aef187314e252b7709c41ee97f9be1b69f8ad2bff495
+  - path: "overlays/z2ram.dtbo"
+    role: overlay
+    size_bytes: 360
+    sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
+
+test:
+  status: pending
+  boot_result: untested
+  cd_access: untested
+  scsi_card: untested
+  notes: "Captured read-only from a boot tree. GPIO-selected kernel supplied explicitly."

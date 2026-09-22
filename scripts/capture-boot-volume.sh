@@ -2,33 +2,58 @@
 # Read an Emu68 boot tree (mounted partition or backup) and create a ROM-free profile draft.
 set -eu
 
-if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
-  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name [profile-id]" >&2
+usage() {
+  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id --kernel RELATIVE/PATH [--initramfs comma,separated,paths]" >&2
   exit 64
-fi
+}
 
-volume=$1
+[ "$#" -ge 5 ] || usage
+source_tree=$1
 author=$2
-profile_id=${3:-"$(basename "$volume")-$(date +%F)"}
-root=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
+profile_id=$3
+shift 3
+selected_kernel=
+selected_initramfs=
 
-case "$volume" in
-  /*) ;;
-  *) echo "The boot-tree path must be absolute." >&2; exit 64 ;;
-esac
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --kernel) [ "$#" -ge 2 ] || usage; selected_kernel=$2; shift 2 ;;
+    --initramfs) [ "$#" -ge 2 ] || usage; selected_initramfs=$2; shift 2 ;;
+    *) usage ;;
+  esac
+done
 
-if [ ! -d "$volume" ] || [ ! -r "$volume/CONFIG.TXT" ] || [ ! -r "$volume/Boot/CMDLINE.TXT" ]; then
-  echo "Expected readable CONFIG.TXT and Boot/CMDLINE.TXT under $volume." >&2
+case "$source_tree" in /*) ;; *) echo "The boot-tree path must be absolute." >&2; exit 64 ;; esac
+case "$author" in *[!A-Za-z0-9._-]* ) echo "Invalid author." >&2; exit 64 ;; esac
+case "$profile_id" in *[!A-Za-z0-9._-]* ) echo "Invalid profile ID." >&2; exit 64 ;; esac
+
+config="$source_tree/CONFIG.TXT"
+cmdline_file="$source_tree/Boot/CMDLINE.TXT"
+if [ ! -d "$source_tree" ] || [ ! -r "$config" ] || [ ! -r "$cmdline_file" ]; then
+  echo "Expected readable CONFIG.TXT and Boot/CMDLINE.TXT under $source_tree." >&2
   exit 66
 fi
 
-case "$author" in
-  *[!A-Za-z0-9._-]* ) echo "Author may contain only letters, numbers, dot, underscore, and hyphen." >&2; exit 64 ;;
-esac
-case "$profile_id" in
-  *[!A-Za-z0-9._-]* ) echo "Profile ID may contain only letters, numbers, dot, underscore, and hyphen." >&2; exit 64 ;;
-esac
+if [ -z "$selected_kernel" ]; then
+  echo "A selected --kernel is required because GPIO conditions cannot be evaluated from a Mac or backup folder." >&2
+  exit 64
+fi
 
+if [ -z "$selected_initramfs" ]; then
+  selected_initramfs=$(awk '
+    /^\[/ { conditional = 1 }
+    conditional == 0 && /^[[:space:]]*initramfs[[:space:]]+/ {
+      sub(/^[[:space:]]*initramfs[[:space:]]+/, ""); print; exit
+    }
+  ' "$config")
+fi
+
+if [ -z "$selected_initramfs" ]; then
+  echo "No unconditional initramfs found; supply --initramfs explicitly." >&2
+  exit 65
+fi
+
+root=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 draft="$root/profiles/drafts/$author-$profile_id"
 if [ -e "$draft" ]; then
   echo "Draft already exists: $draft" >&2
@@ -46,13 +71,49 @@ size_bytes() {
 }
 
 yaml_escape() { sed 's/\\/\\\\/g; s/"/\\"/g'; }
+require_asset() {
+  relative=$1
+  if [ ! -r "$source_tree/$relative" ]; then
+    echo "Selected asset is missing or unreadable: $relative" >&2
+    exit 66
+  fi
+}
+emit_asset() {
+  relative=$1
+  role=$2
+  file="$source_tree/$relative"
+  printf '  - path: "%s"\n' "$(printf '%s' "$relative" | yaml_escape)"
+  printf '    role: %s\n' "$role"
+  printf '    size_bytes: %s\n' "$(size_bytes "$file")"
+  printf '    sha256: %s\n' "$(sha256 "$file")"
+}
+
+require_asset "$selected_kernel"
+asset_list="$selected_kernel|kernel"
+
+old_ifs=$IFS
+IFS=,
+set -- $selected_initramfs
+IFS=$old_ifs
+index=0
+for asset in "$@"; do
+  [ -n "$asset" ] || continue
+  require_asset "$asset"
+  index=$((index + 1))
+  asset_list="$asset_list\n$asset|initramfs_$index"
+done
+
+overlays=$(awk '/^[[:space:]]*dtoverlay=/ { sub(/^[[:space:]]*dtoverlay=/, ""); print }' "$config")
+printf '%s\n' "$overlays" | while IFS= read -r overlay; do
+  [ -n "$overlay" ] || continue
+  name=${overlay%%,*}
+  require_asset "overlays/$name.dtbo"
+done
 
 mkdir -p "$draft"
-cp "$volume/CONFIG.TXT" "$draft/config.txt"
-cp "$volume/Boot/CMDLINE.TXT" "$draft/cmdline.txt"
-
-initramfs=$(awk '/^[[:space:]]*initramfs[[:space:]]+/ { sub(/^[[:space:]]*initramfs[[:space:]]+/, ""); print; exit }' "$volume/CONFIG.TXT")
-cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$volume/Boot/CMDLINE.TXT")
+cp "$config" "$draft/config.txt"
+cp "$cmdline_file" "$draft/cmdline.txt"
+cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline_file")
 
 {
   echo "schema_version: 1"
@@ -68,17 +129,18 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$volume/
   echo "boot:"
   echo "  config_snapshot: config.txt"
   echo "  cmdline_snapshot: cmdline.txt"
-  printf '  initramfs_raw: "%s"\n' "$(printf '%s' "$initramfs" | yaml_escape)"
+  printf '  selected_kernel: "%s"\n' "$(printf '%s' "$selected_kernel" | yaml_escape)"
+  printf '  initramfs_raw: "%s"\n' "$(printf '%s' "$selected_initramfs" | yaml_escape)"
   echo "  overlays:"
-  awk '/^[[:space:]]*dtoverlay=/ { sub(/^[[:space:]]*dtoverlay=/, ""); print "    - \"" $0 "\"" }' "$volume/CONFIG.TXT"
+  printf '%s\n' "$overlays" | while IFS= read -r overlay; do [ -n "$overlay" ] && printf '    - "%s"\n' "$(printf '%s' "$overlay" | yaml_escape)"; done
   printf '  cmdline: "%s"\n' "$(printf '%s' "$cmdline" | yaml_escape)"
   echo
   echo "files:"
-  find "$volume/KERNEL" "$volume/ROMS" "$volume/overlays" -type f ! -name '._*' 2>/dev/null | LC_ALL=C sort | while IFS= read -r file; do
-    relative=${file#"$volume"/}
-    printf '  - path: "%s"\n' "$(printf '%s' "$relative" | yaml_escape)"
-    printf '    size_bytes: %s\n' "$(size_bytes "$file")"
-    printf '    sha256: %s\n' "$(sha256 "$file")"
+  printf '%b\n' "$asset_list" | while IFS='|' read -r relative role; do emit_asset "$relative" "$role"; done
+  printf '%s\n' "$overlays" | while IFS= read -r overlay; do
+    [ -n "$overlay" ] || continue
+    name=${overlay%%,*}
+    emit_asset "overlays/$name.dtbo" overlay
   done
   echo
   echo "test:"
@@ -86,8 +148,9 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$volume/
   echo "  boot_result: untested"
   echo "  cd_access: untested"
   echo "  scsi_card: untested"
-  echo "  notes: \"Captured read-only from mounted boot partition.\""
+  echo "  notes: \"Captured read-only from a boot tree. GPIO-selected kernel supplied explicitly.\""
 } > "$draft/profile.yaml"
 
+chmod 644 "$draft/config.txt" "$draft/cmdline.txt" "$draft/profile.yaml"
 echo "Draft written: $draft"
-echo "The source boot tree was read only; no ROM or binary file was copied."
+echo "Only the selected kernel, initramfs assets, and referenced overlays were fingerprinted."
