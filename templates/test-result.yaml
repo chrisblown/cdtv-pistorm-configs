@@ -4,6 +4,7 @@ versions:
   emu68: ""
   caffeine_os: ""
 result:
+  status: pending # pending | tested | working | known_issue
   boot_result: booted | looped | failed | untested
   caffeine_os_boots: yes | no | untested
   cd_access: working | freezes | untested
