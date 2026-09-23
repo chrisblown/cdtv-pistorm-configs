@@ -24,6 +24,7 @@ test:
   status: pending # pending | tested | working | known_issue
   boot_result: untested
   caffeine_os_boots: untested
+  cd_boots: untested
   cd_access: untested
   audio_cd: untested
   cd_plus_g: untested

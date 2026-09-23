@@ -153,6 +153,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "  status: pending"
   echo "  boot_result: untested"
   echo "  caffeine_os_boots: untested"
+  echo "  cd_boots: untested"
   echo "  cd_access: untested"
   echo "  audio_cd: untested"
   echo "  cd_plus_g: untested"
