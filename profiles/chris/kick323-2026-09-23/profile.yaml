@@ -46,6 +46,7 @@ test:
   status: known_issue
   boot_result: booted
   caffeine_os_boots: no
+  cd_boots: yes
   cd_access: working
   audio_cd: untested
   cd_plus_g: untested
