@@ -128,6 +128,10 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "hardware:"
   printf '  machine: %s\n' "$machine"
   echo
+  echo "versions:"
+  echo '  emu68: ""'
+  echo '  caffeine_os: ""'
+  echo
   echo "boot:"
   echo "  config_snapshot: config.txt"
   echo "  cmdline_snapshot: cmdline.txt"
@@ -148,6 +152,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline
   echo "test:"
   echo "  status: pending"
   echo "  boot_result: untested"
+  echo "  caffeine_os_boots: untested"
   echo "  cd_access: untested"
   echo "  audio_cd: untested"
   echo "  cd_plus_g: untested"
