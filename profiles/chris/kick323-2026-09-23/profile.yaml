@@ -48,7 +48,7 @@ test:
   caffeine_os_boots: no
   cd_boots: yes
   cd_access: working
-  audio_cd: untested
-  cd_plus_g: untested
+  audio_cd: working
+  cd_plus_g: working
   scsi_card: untested
   notes: "Caffeine OS tries to boot but throws WB math error suspend or reboot"
