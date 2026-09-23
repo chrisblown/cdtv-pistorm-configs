@@ -3,7 +3,7 @@ tested_at: 2026-09-22
 versions:
   emu68: ""
   caffeine_os: ""
-result:
+test:
   status: pending # pending | tested | working | known_issue
   boot_result: booted | looped | failed | untested
   caffeine_os_boots: yes | no | untested
