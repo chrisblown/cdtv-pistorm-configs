@@ -1,7 +1,11 @@
 profile: profiles/contributor-name/profile-id
 tested_at: 2026-09-22
+versions:
+  emu68: ""
+  caffeine_os: ""
 result:
   boot_result: booted | looped | failed | untested
+  caffeine_os_boots: yes | no | untested
   cd_access: working | freezes | untested
   audio_cd: working | failed | untested
   cd_plus_g: working | failed | untested

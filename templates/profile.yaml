@@ -6,6 +6,10 @@ captured_at: 2026-09-22
 hardware:
   machine: CDTV
 
+versions:
+  emu68: ""
+  caffeine_os: ""
+
 boot:
   config_snapshot: config.txt
   cmdline_snapshot: cmdline.txt
@@ -19,6 +23,7 @@ files: []
 test:
   status: pending
   boot_result: untested
+  caffeine_os_boots: untested
   cd_access: untested
   audio_cd: untested
   cd_plus_g: untested
