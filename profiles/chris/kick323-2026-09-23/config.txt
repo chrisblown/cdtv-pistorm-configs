@@ -1,0 +1,99 @@
+# ===============================================================================
+# CaffeineOS_Storm Config.txt 2.8 (10.12.2025)
+# ===============================================================================
+#
+# QUICK SETTINGS GUIDE:
+#
+# 1. DISPLAY OPTIONS
+#    - For automatic display detection: Leave settings as they are
+#    - For 1920x1080 resolution: Uncomment the hdmi_group and hdmi_mode lines
+#
+# 2. PERFORMANCE OPTIONS
+#    - Default: Auto-detect with no overclocking (recommended)
+#    - Overclock Pi4/CM4: Uncomment the 2.2GHz section
+#    - Overclock Pi3: Uncomment the 1.5GHz section
+#
+# 3. HARDWARE DETECTION
+#    - The system will automatically detect your PiStorm variant
+#
+# 4. COMMON SETTINGS
+#    - Loads the CaffeineOS startup jingle ROM
+#    - Loads boot command line parameters from cmdline.txt
+#
+# ===============================================================================
+
+# === SYSTEM BASICS ===
+disable_splash=1       # Removes boot splash screen
+arm_64bit=1            # Enables 64-bit mode
+boot_delay=1           # Slight delay for stability
+bootcode_delay=1       # Additional boot code delay
+avoid_warnings=2       # Hides warning messages
+gpu_mem=32             # Memory allocated to GPU
+total_mem=2048         # Total system memory
+ 
+# === DISPLAY SETTINGS ===
+hdmi_force_hotplug=1   # Always use HDMI output
+disable_overscan=1     # Remove black borders
+hdmi_group=0           # Auto-detect display
+
+# For forced 1920x1080 resolution, uncomment these two lines:
+#hdmi_group=2
+#hdmi_mode=82
+
+#=== OPTIONAL: 2160x1440 CUSTOM PROFILE ===
+#Forces 2160x1440 @ 60Hz using CVT reduced blanking.
+#Suitable for high-resolution LCD panels.
+#Uncomment to enable this custom mode:
+#hdmi_group=2
+#hdmi_mode=87
+#hdmi_cvt=2160 1440 60 3 0 0 1
+#max_framebuffer_width=2160
+#max_framebuffer_height=1440
+
+#=== OPTIONAL: UNIVERSAL 50Hz OUTPUT (Failsafe Mode) ===
+#Forces 1080p50 if supported by the display.
+#If unsupported, Pi falls back to EDID-native mode automatically.
+#Uncomment to enable 50Hz mode:
+#hdmi_group=1
+#hdmi_mode=31
+#hdmi_force_mode=1
+
+# === COMMON SETTINGS ===
+# These settings apply to all PiStorm variants except Stealth Mode
+cmdline=boot/cmdline.txt
+#initramfs roms/logica_dialoga.rom
+dtoverlay=sdhc,unit0=rw
+dtoverlay=z2ram,size=0
+#initramfs roms/cdtv236b46.rom,roms/kick323-a1200.rom
+#initramfs roms/cdtv236b46.rom,roms/ks31a1200.rom
+initramfs roms/cdtv236b46.rom,roms/kick323-a1200-47115.rom
+kernel=kernel/Emu68-pistorm
+ 
+# === RASPBERRY PI COMPUTE MODULE 4 SETTINGS ===
+[cm4]
+# Uncomment to use external antenna (U.FL connector)
+#dtparam=ant2
+arm_freq=1800          # CPU frequency for CM4
+[all]
+
+# === RASPBERRY PI4 SETTINGS ===
+[pi4]
+arm_boost=1            # Enable automatic CPU boost
+# For older revisions, uncomment:
+#arm_freq=1800
+[all]
+
+# === PERFORMANCE SETTINGS ===
+# --- Overclock CM4/Pi4 to 2.2GHz ---
+# Uncomment all lines below to enable:
+#arm_freq=2200
+#over_voltage=9
+#force_turbo=1
+
+# --- Overclock Pi3 to 1.5GHz ---
+# Uncomment all lines below to enable:
+#force_turbo=1
+#over_voltage=4
+#arm_freq=1500
+#core_freq=550
+#sdram_freq=600

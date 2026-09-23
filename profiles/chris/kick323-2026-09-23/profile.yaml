@@ -1,0 +1,53 @@
+schema_version: 1
+id: kick323-2026-09-23
+author: chris
+captured_at: 2026-09-23
+
+hardware:
+  machine: CDTV
+
+versions:
+  emu68: "1.1 beta.1"
+  caffeine_os: "9317"
+
+boot:
+  config_snapshot: config.txt
+  cmdline_snapshot: cmdline.txt
+  selected_kernel: "kernel/Emu68-pistorm"
+  initramfs_raw: "roms/cdtv236b46.rom,roms/kick323-a1200-47115.rom"
+  overlays:
+    - "sdhc,unit0=rw"
+    - "z2ram,size=0"
+  cmdline: "z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw"
+
+files:
+  - path: "kernel/Emu68-pistorm"
+    role: kernel
+    size_bytes: 4239392
+    sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
+  - path: "roms/cdtv236b46.rom"
+    role: initramfs_1
+    size_bytes: 524288
+    sha256: cf21cb5c09ce5f6c892d9ff534352abcceb338c1cc355340e886e45e186517c0
+  - path: "roms/kick323-a1200-47115.rom"
+    role: initramfs_2
+    size_bytes: 524288
+    sha256: 27ddaf0a460e2ee85935139cbac1df234c283b3979c50526d118e9a55c61100a
+  - path: "overlays/sdhc.dtbo"
+    role: overlay
+    size_bytes: 740
+    sha256: 40a04d763d4ca8bba6c9aef187314e252b7709c41ee97f9be1b69f8ad2bff495
+  - path: "overlays/z2ram.dtbo"
+    role: overlay
+    size_bytes: 360
+    sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
+
+test:
+  status: known_issue
+  boot_result: booted
+  caffeine_os_boots: no
+  cd_access: working
+  audio_cd: untested
+  cd_plus_g: untested
+  scsi_card: untested
+  notes: "Caffeine OS tries to boot but throws WB math error suspend or reboot"
