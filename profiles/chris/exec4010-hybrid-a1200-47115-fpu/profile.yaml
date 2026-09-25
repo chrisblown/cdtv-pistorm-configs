@@ -1,0 +1,55 @@
+schema_version: 1
+id: exec4010-hybrid-a1200-47115-fpu
+author: chris
+captured_at: 2026-09-25
+
+hardware:
+  machine: CDTV
+
+versions:
+  emu68: "1.1 beta.1"
+  caffeine_os: "9317"
+
+boot:
+  config_snapshot: config.txt
+  cmdline_snapshot: cmdline.txt
+  selected_kernel: "kernel/Emu68.img"
+  initramfs_raw: "roms/cdtv235_exec4010_F0_dual.rom,roms/kick323-a1200-47115.rom"
+  overlays:
+    - "sdhc,unit0=rw"
+    - "z2ram,size=0"
+  cmdline: "z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw"
+
+files:
+  - path: "kernel/Emu68.img"
+    role: kernel
+    size_bytes: 4239392
+    sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
+  - path: "roms/cdtv235_exec4010_F0_dual.rom"
+    role: initramfs_1
+    size_bytes: 524288
+    sha256: 9e2e7f288c835a1800bbe898bcf4ebfe2c6908548b9b61eef19856a2cfa7b56f
+  - path: "roms/kick323-a1200-47115.rom"
+    role: initramfs_2
+    size_bytes: 524288
+    sha256: 27ddaf0a460e2ee85935139cbac1df234c283b3979c50526d118e9a55c61100a
+  - path: "overlays/sdhc.dtbo"
+    role: overlay
+    size_bytes: 740
+    sha256: 40a04d763d4ca8bba6c9aef187314e252b7709c41ee97f9be1b69f8ad2bff495
+  - path: "overlays/z2ram.dtbo"
+    role: overlay
+    size_bytes: 360
+    sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
+
+test:
+  status: working
+  boot_result: booted
+  caffeine_os_boots: yes
+  fpu: working
+  cd_boots: untested
+  cd_access: untested
+  audio_cd: untested
+  cd_plus_g: untested
+  scsi_card: untested
+  notes: "Brufnus patched 2.35 extended ROM with Exec 40.10. Chris confirmed CaffeineOS booted and an FPU-dependent demo ran. The mathffp-patch command was commented out in CaffeineOS S:Startup-Sequence."

@@ -1,0 +1,15 @@
+disable_splash=1
+arm_64bit=1
+boot_delay=1
+bootcode_delay=1
+avoid_warnings=2
+gpu_mem=32
+total_mem=2048
+hdmi_force_hotplug=1
+disable_overscan=1
+hdmi_group=0
+dtoverlay=sdhc,unit0=rw
+dtoverlay=z2ram,size=0
+cmdline=boot/cmdline.txt
+initramfs roms/cdtv236b46.rom,roms/kick323-a500.rom
+kernel=kernel/Emu68.img
