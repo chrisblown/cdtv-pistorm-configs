@@ -1,0 +1,2 @@
+z2_ram_size=0 vc4.mem=64 sd.clock=75 sd.unit0=rw
+

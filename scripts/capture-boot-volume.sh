@@ -41,13 +41,13 @@ if [ "$kernel_count" -ne 1 ]; then
   echo "CONFIG.TXT must contain exactly one active kernel= statement; found $kernel_count. GPIO/multi-kernel configurations are not accepted." >&2
   exit 65
 fi
-selected_kernel=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); print; exit }' "$config")
+selected_kernel=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); sub(/\r$/, ""); print; exit }' "$config")
 
 if [ -z "$selected_initramfs" ]; then
   selected_initramfs=$(awk '
     /^\[/ { conditional = 1 }
     conditional == 0 && /^[[:space:]]*initramfs[[:space:]]+/ {
-      sub(/^[[:space:]]*initramfs[[:space:]]+/, ""); print; exit
+      sub(/^[[:space:]]*initramfs[[:space:]]+/, ""); sub(/\r$/, ""); print; exit
     }
   ' "$config")
 fi
@@ -75,17 +75,34 @@ size_bytes() {
 }
 
 yaml_escape() { sed 's/\\/\\\\/g; s/"/\\"/g'; }
+lowercase() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+
+# CONFIG.TXT paths are conventionally lowercase, but FAT boot volumes can hold
+# uppercase directories (for example KERNEL/ and ROMS/). Preserve the configured
+# path in the profile while resolving its local source file case-insensitively.
+source_asset_path() {
+  relative=$1
+  direct="$source_tree/$relative"
+  if [ -r "$direct" ]; then printf '%s\n' "$direct"; return; fi
+
+  wanted=$(lowercase "$relative")
+  matches=$( (find "$source_tree" -type f ! -name '._*' -print 2>/dev/null || true) | while IFS= read -r candidate; do
+    candidate_relative=${candidate#"$source_tree"/}
+    if [ "$(lowercase "$candidate_relative")" = "$wanted" ]; then printf '%s\n' "$candidate"; fi
+  done)
+  count=$(printf '%s\n' "$matches" | awk 'NF { count++ } END { print count + 0 }')
+  [ "$count" -eq 1 ] || { echo "Selected asset is missing, unreadable, or ambiguous: $relative" >&2; exit 66; }
+  printf '%s\n' "$matches" | awk 'NF { print; exit }'
+}
+
 require_asset() {
   relative=$1
-  if [ ! -r "$source_tree/$relative" ]; then
-    echo "Selected asset is missing or unreadable: $relative" >&2
-    exit 66
-  fi
+  source_asset_path "$relative" >/dev/null
 }
 emit_asset() {
   relative=$1
   role=$2
-  file="$source_tree/$relative"
+  file=$(source_asset_path "$relative")
   printf '  - path: "%s"\n' "$(printf '%s' "$relative" | yaml_escape)"
   printf '    role: %s\n' "$role"
   printf '    size_bytes: %s\n' "$(size_bytes "$file")"
@@ -107,7 +124,7 @@ for asset in "$@"; do
   asset_list="$asset_list\n$asset|initramfs_$index"
 done
 
-overlays=$(awk '/^[[:space:]]*dtoverlay=/ { sub(/^[[:space:]]*dtoverlay=/, ""); print }' "$config")
+overlays=$(awk '/^[[:space:]]*dtoverlay=/ { sub(/^[[:space:]]*dtoverlay=/, ""); sub(/\r$/, ""); print }' "$config")
 printf '%s\n' "$overlays" | while IFS= read -r overlay; do
   [ -n "$overlay" ] || continue
   name=${overlay%%,*}
@@ -117,7 +134,7 @@ done
 mkdir -p "$draft"
 cp "$config" "$draft/config.txt"
 cp "$cmdline_file" "$draft/cmdline.txt"
-cmdline=$(awk '!/^[[:space:]]*#/ && NF { last=$0 } END { print last }' "$cmdline_file")
+cmdline=$(awk '!/^[[:space:]]*#/ && NF { sub(/\r$/, ""); last=$0 } END { print last }' "$cmdline_file")
 
 {
   echo "schema_version: 1"

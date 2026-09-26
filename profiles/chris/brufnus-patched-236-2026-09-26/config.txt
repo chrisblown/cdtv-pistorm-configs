@@ -1,0 +1,37 @@
+# === SYSTEM BASICS ===
+disable_splash=1       # Removes boot splash screen
+arm_64bit=1            # Enables 64-bit mode
+boot_delay=1           # Slight delay for stability
+bootcode_delay=1       # Additional boot code delay
+avoid_warnings=2       # Hides warning messages
+gpu_mem=32             # Memory allocated to GPU
+total_mem=2048         # Total system memory
+ 
+# === DISPLAY SETTINGS ===
+hdmi_force_hotplug=1   # Always use HDMI output
+disable_overscan=1     # Remove black borders
+hdmi_group=0           # Auto-detect display
+
+dtoverlay=sdhc,unit0=rw
+dtoverlay=z2ram,size=0
+
+cmdline=boot/cmdline.txt
+
+#Factory Commodore ROMs 
+#initramfs roms/cdtv236b46.rom,roms/kick323-a1200.rom
+
+# Brufnus patched 235 (FPU works)
+#initramfs roms/cdtv235_exec4010_F0_dual.rom,roms/kick323-a1200-47115.rom
+
+# Brufnus patched 236 (FPU works)
+initramfs roms/cdtv236_b46_exec4010.rom,roms/kick323-a1200-47115.rom
+
+kernel=kernel/Emu68.img
+
+# --- Overclock Pi3 to 1.5GHz ---
+# Uncomment all lines below to enable:
+#force_turbo=1
+#over_voltage=4
+#arm_freq=1500
+#core_freq=550
+#sdram_freq=600
