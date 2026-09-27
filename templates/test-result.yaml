@@ -12,5 +12,5 @@ test:
   cd_access: working | freezes | untested
   audio_cd: working | failed | untested
   cd_plus_g: working | failed | untested
-  scsi_card: visible | missing | untested
+  scsi_card: visible | missing | crash | untested
   notes: ""

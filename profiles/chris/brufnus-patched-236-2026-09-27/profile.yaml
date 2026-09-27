@@ -43,13 +43,13 @@ files:
     sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
 
 test:
-  status: pending
-  boot_result: untested
-  caffeine_os_boots: untested
-  fpu: untested
-  cd_boots: untested
-  cd_access: untested
-  audio_cd: untested
-  cd_plus_g: untested
-  scsi_card: untested
-  notes: "Captured read-only from a boot tree with a single active kernel statement. Updated patched-236 extended ROM SHA-256."
+  status: known_issue
+  boot_result: booted
+  caffeine_os_boots: yes
+  fpu: working
+  cd_boots: yes
+  cd_access: working
+  audio_cd: working
+  cd_plus_g: working
+  scsi_card: crash
+  notes: "Patched exec.library enables FPU. SCSI card causes a crash."
