@@ -1,5 +1,5 @@
 schema_version: 1
-id: beta48-a500-fast-page-zero-2026-09-30
+id: beta48-a1200-fast-page-zero-2026-09-30
 author: chris
 captured_at: 2026-09-30
 
@@ -14,7 +14,7 @@ boot:
   config_snapshot: config.txt
   cmdline_snapshot: cmdline.txt
   selected_kernel: "kernel/Emu68.img"
-  initramfs_raw: "roms/cdtv236b48.rom,roms/kick323-a500.rom"
+  initramfs_raw: "roms/cdtv236b48.rom,roms/kick323-a1200-47115.rom"
   overlays:
     - "sdhc,unit0=rw"
     - "z2ram,size=0"
@@ -29,10 +29,10 @@ files:
     role: initramfs_1
     size_bytes: 524288
     sha256: 00b3c164da3c272303b9b715bfca875a169fef39911dd22ff95741d9ee757692
-  - path: "roms/kick323-a500.rom"
+  - path: "roms/kick323-a1200-47115.rom"
     role: initramfs_2
     size_bytes: 524288
-    sha256: e66823f4baaf2c93ea6ac600c07014ccddadc44cc58281c564baf165e2035b47
+    sha256: 27ddaf0a460e2ee85935139cbac1df234c283b3979c50526d118e9a55c61100a
   - path: "overlays/sdhc.dtbo"
     role: overlay
     size_bytes: 740
@@ -47,9 +47,9 @@ test:
   boot_result: booted
   caffeine_os_boots: yes
   fpu: working
-  cd_boots: untested
-  cd_access: untested
-  audio_cd: untested
-  cd_plus_g: untested
+  cd_boots: yes
+  cd_access: working
+  audio_cd: working
+  cd_plus_g: working
   scsi_card: untested
-  notes: "fast_page_zero enabled in Boot/CMDLINE.TXT. FPU confirmed available."
+  notes: "fast_page_zero enabled in Boot/CMDLINE.TXT. FPU and all non-SCSI tests confirmed working."

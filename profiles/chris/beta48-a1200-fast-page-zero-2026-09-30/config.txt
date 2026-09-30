@@ -18,9 +18,7 @@ dtoverlay=z2ram,size=0
 cmdline=boot/cmdline.txt
 
 #Factory Commodore ROMs 
-#initramfs roms/cdtv236b46.rom,roms/kick323-a1200.rom
-
-initramfs roms/cdtv236b48.rom,roms/kick323-a500.rom
+initramfs roms/cdtv236b48.rom,roms/kick323-a1200-47115.rom
 
 # Brufnus patched 235 (FPU works)
 #initramfs roms/cdtv235_exec4010_F0_dual.rom,roms/kick323-a1200-47115.rom
