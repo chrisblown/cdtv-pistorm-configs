@@ -21,8 +21,33 @@ for profile in "$root"/profiles/*/*/profile.yaml "$root"/profiles/drafts/*/profi
   else
     kernel_count=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { count++ } END { print count + 0 }' "$config_snapshot")
     if [ "$kernel_count" -ne 1 ]; then
-      echo "Profile config must contain exactly one kernel statement: $profile" >&2
-      failed=1
+      pistorm_type=$(awk '/^  pistorm_type: / { print substr($0, 17); exit }' "$profile")
+      case "$pistorm_type" in
+        classic) selected_section='[gpio17=0]' ;;
+        pistorm16) selected_section='[gpio24=1]' ;;
+        pistorm32lite) selected_section='[gpio24=0]' ;;
+        pistorm32lite-stealth) selected_section='[gpio4=0]' ;;
+        *) selected_section= ;;
+      esac
+      selected_kernel_count=$(awk -v selected_section="$selected_section" '
+        BEGIN { scope = "global" }
+        {
+          line = $0; sub(/\r$/, "", line)
+          section = line; sub(/^[[:space:]]*/, "", section); sub(/[[:space:]]*$/, "", section)
+          if (section ~ /^\[/) {
+            if (section == "[all]") scope = "global"
+            else if (section == selected_section) scope = "selected"
+            else scope = "other"
+            next
+          }
+          if ((scope == "global" || scope == "selected") && line ~ /^[[:space:]]*kernel[[:space:]]*=/) count++
+        }
+        END { print count + 0 }
+      ' "$config_snapshot")
+      if [ -z "$selected_section" ] || [ "$selected_kernel_count" -ne 1 ]; then
+        echo "Profile config must contain exactly one kernel statement, or one kernel for its PiStorm type: $profile" >&2
+        failed=1
+      fi
     fi
   fi
 done

@@ -5,6 +5,7 @@ captured_at: 2026-09-22
 
 hardware:
   machine: CDTV
+  pistorm_type: classic
 
 versions:
   emu68: ""

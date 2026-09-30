@@ -75,10 +75,14 @@ All scripts are POSIX shell and run locally. None downloads ROMs, kernels, or ot
 
 ```sh
 ./scripts/capture-boot-volume.sh SOURCE_TREE AUTHOR PROFILE_ID \
-  [--machine CDTV|A570|A690] [--initramfs comma,separated,paths]
+  [--machine CDTV|A570|A690] \
+  [--pistorm-type classic|pistorm16|pistorm32lite|pistorm32lite-stealth] \
+  [--initramfs comma,separated,paths]
 ```
 
-Reads `SOURCE_TREE` only and creates `profiles/drafts/AUTHOR-PROFILE_ID/`. The source may be a mounted FAT boot partition, such as `/Volumes/EMU68`, or a local backup containing readable `CONFIG.TXT` and `Boot/CMDLINE.TXT`. It copies those text snapshots and fingerprints exactly the selected `kernel=`, active `initramfs` assets, and `dtoverlay` files. It accepts LF or CRLF configuration files and resolves FAT asset paths regardless of directory case. It accepts only one active `kernel=` statement; GPIO/multi-kernel configurations are rejected. If the required initramfs is conditional or cannot be inferred, provide its exact comma-separated value with `--initramfs`.
+Reads `SOURCE_TREE` only and creates `profiles/drafts/AUTHOR-PROFILE_ID/`. The source may be a mounted FAT boot partition, such as `/Volumes/EMU68`, or a local backup containing readable `CONFIG.TXT` and `Boot/CMDLINE.TXT`. It copies those text snapshots and fingerprints the effective kernel, initramfs assets, and overlays. It accepts LF or CRLF configuration files and resolves FAT asset paths regardless of directory case.
+
+`classic` is the default PiStorm type. When a config has multiple `initramfs` lines and no `--pistorm-type`, the script asks whether to use Classic; answer `n` to exit and rerun with an explicit type. The type selects the corresponding GPIO section in a stock CaffeineOS config: Classic uses `[gpio17=0]`, PiStorm16 `[gpio24=1]`, PiStorm32 Lite `[gpio24=0]`, and PiStorm32 Lite Stealth `[gpio4=0]`. Use `--initramfs` only to override an unusual configuration explicitly.
 
 ### `validate-registry.sh`
 

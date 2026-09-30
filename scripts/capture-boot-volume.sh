@@ -3,7 +3,7 @@
 set -eu
 
 usage() {
-  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id [--machine CDTV|A570|A690] [--initramfs comma,separated,paths]" >&2
+  echo "Usage: $0 /path/to/EMU68-boot-tree contributor-name profile-id [--machine CDTV|A570|A690] [--pistorm-type classic|pistorm16|pistorm32lite|pistorm32lite-stealth] [--initramfs comma,separated,paths]" >&2
   exit 64
 }
 
@@ -15,11 +15,13 @@ shift 3
 selected_kernel=
 selected_initramfs=
 machine=CDTV
+pistorm_type=
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --initramfs) [ "$#" -ge 2 ] || usage; selected_initramfs=$2; shift 2 ;;
     --machine) [ "$#" -ge 2 ] || usage; machine=$2; shift 2 ;;
+    --pistorm-type) [ "$#" -ge 2 ] || usage; pistorm_type=$2; shift 2 ;;
     *) usage ;;
   esac
 done
@@ -28,6 +30,7 @@ case "$source_tree" in /*) ;; *) echo "The boot-tree path must be absolute." >&2
 case "$author" in *[!A-Za-z0-9._-]* ) echo "Invalid author." >&2; exit 64 ;; esac
 case "$profile_id" in *[!A-Za-z0-9._-]* ) echo "Invalid profile ID." >&2; exit 64 ;; esac
 case "$machine" in CDTV|A570|A690) ;; *) echo "Machine must be CDTV, A570, or A690." >&2; exit 64 ;; esac
+case "$pistorm_type" in ''|classic|pistorm16|pistorm32lite|pistorm32lite-stealth) ;; *) echo "PiStorm type must be classic, pistorm16, pistorm32lite, or pistorm32lite-stealth." >&2; exit 64 ;; esac
 
 config="$source_tree/CONFIG.TXT"
 cmdline_file="$source_tree/Boot/CMDLINE.TXT"
@@ -36,20 +39,61 @@ if [ ! -d "$source_tree" ] || [ ! -r "$config" ] || [ ! -r "$cmdline_file" ]; th
   exit 66
 fi
 
-kernel_count=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { count++ } END { print count + 0 }' "$config")
+initramfs_count=$(awk '/^[[:space:]]*initramfs[[:space:]]+/ { count++ } END { print count + 0 }' "$config")
+if [ -z "$pistorm_type" ]; then
+  if [ "$initramfs_count" -gt 1 ]; then
+    printf 'Multiple initramfs lines found in CONFIG.TXT! Using PiStorm Classic (Y/n) '
+    if ! IFS= read -r answer; then
+      echo "Use --pistorm-type classic|pistorm16|pistorm32lite|pistorm32lite-stealth to set which model you are using." >&2
+      exit 65
+    fi
+    case "$answer" in ''|Y|y) pistorm_type=classic ;; N|n) echo "Use --pistorm-type classic|pistorm16|pistorm32lite|pistorm32lite-stealth to set which model you are using." >&2; exit 65 ;; *) echo "Please answer Y or n." >&2; exit 65 ;; esac
+  else
+    pistorm_type=classic
+  fi
+fi
+
+case "$pistorm_type" in
+  classic) selected_section='[gpio17=0]' ;;
+  pistorm16) selected_section='[gpio24=1]' ;;
+  pistorm32lite) selected_section='[gpio24=0]' ;;
+  pistorm32lite-stealth) selected_section='[gpio4=0]' ;;
+esac
+
+effective_directives=$(awk -v selected_section="$selected_section" '
+  BEGIN { scope = "global" }
+  {
+    line = $0
+    sub(/\r$/, "", line)
+    section = line
+    sub(/^[[:space:]]*/, "", section)
+    sub(/[[:space:]]*$/, "", section)
+    if (section ~ /^\[/) {
+      if (section == "[all]") scope = "global"
+      else if (section == selected_section) scope = "selected"
+      else scope = "other"
+      next
+    }
+    if (scope == "other") next
+    if (line ~ /^[[:space:]]*kernel[[:space:]]*=/) {
+      sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, "", line); print "kernel|" line
+    } else if (line ~ /^[[:space:]]*initramfs[[:space:]]+/) {
+      sub(/^[[:space:]]*initramfs[[:space:]]+/, "", line); print "initramfs|" line
+    } else if (line ~ /^[[:space:]]*dtoverlay=/) {
+      sub(/^[[:space:]]*dtoverlay=/, "", line); print "overlay|" line
+    }
+  }
+' "$config")
+
+kernel_count=$(printf '%s\n' "$effective_directives" | awk -F'|' '$1 == "kernel" { count++ } END { print count + 0 }')
+selected_kernel=$(printf '%s\n' "$effective_directives" | awk -F'|' '$1 == "kernel" { value = $2 } END { print value }')
 if [ "$kernel_count" -ne 1 ]; then
-  echo "CONFIG.TXT must contain exactly one active kernel= statement; found $kernel_count. GPIO/multi-kernel configurations are not accepted." >&2
+  echo "PiStorm type $pistorm_type must resolve to exactly one kernel= statement; found $kernel_count." >&2
   exit 65
 fi
-selected_kernel=$(awk '/^[[:space:]]*kernel[[:space:]]*=/ { sub(/^[[:space:]]*kernel[[:space:]]*=[[:space:]]*/, ""); sub(/\r$/, ""); print; exit }' "$config")
 
 if [ -z "$selected_initramfs" ]; then
-  selected_initramfs=$(awk '
-    /^\[/ { conditional = 1 }
-    conditional == 0 && /^[[:space:]]*initramfs[[:space:]]+/ {
-      sub(/^[[:space:]]*initramfs[[:space:]]+/, ""); sub(/\r$/, ""); print; exit
-    }
-  ' "$config")
+  selected_initramfs=$(printf '%s\n' "$effective_directives" | awk -F'|' '$1 == "initramfs" { value = $2 } END { print value }')
 fi
 
 if [ -z "$selected_initramfs" ]; then
@@ -124,7 +168,7 @@ for asset in "$@"; do
   asset_list="$asset_list\n$asset|initramfs_$index"
 done
 
-overlays=$(awk '/^[[:space:]]*dtoverlay=/ { sub(/^[[:space:]]*dtoverlay=/, ""); sub(/\r$/, ""); print }' "$config")
+overlays=$(printf '%s\n' "$effective_directives" | awk -F'|' '$1 == "overlay" { print $2 }')
 printf '%s\n' "$overlays" | while IFS= read -r overlay; do
   [ -n "$overlay" ] || continue
   name=${overlay%%,*}
@@ -144,6 +188,7 @@ cmdline=$(awk '!/^[[:space:]]*#/ && NF { sub(/\r$/, ""); last=$0 } END { print l
   echo
   echo "hardware:"
   printf '  machine: %s\n' "$machine"
+  printf '  pistorm_type: %s\n' "$pistorm_type"
   echo
   echo "versions:"
   echo '  emu68: ""'
