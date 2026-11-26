@@ -4,6 +4,8 @@ This repository records reproducible PiStorm/Emu68 CDTV boot configurations.
 
 It deliberately stores configuration text, file names, byte sizes, and SHA-256 fingerprints—but never ROM images, Kickstarts, disk images, or other binary payloads.
 
+For hardware setup, CDTV-compatible CPLD firmware, Emu68 1.1 beta configuration, ROM preparation, and optional CaffeineOS installation, see the [CDTV PiStorm and Emu68 quick guide](docs/CDTV-QUICK-GUIDE.md).
+
 ## Profile layout
 
 Each submitted configuration is a directory:
