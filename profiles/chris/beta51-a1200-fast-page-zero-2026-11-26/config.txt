@@ -19,11 +19,12 @@ cmdline=boot/cmdline.txt
 
 #Factory Commodore ROMs 
 #initramfs roms/cdtv236b48.rom,roms/kick323-a1200-47115.rom
+initramfs roms/cdtv236b51.rom,roms/kick323-a1200-47115.rom
 
 # ModdedCDG lib
 #initramfs roms/cdtv236b51-play-fp.rom,roms/kick323-a1200-47115.rom
 #initramfs roms/cdtv236b51-fp-play.rom,roms/kick323-a1200-47115.rom
-initramfs roms/cdtv236b51-play.rom,roms/kick323-a1200-47115.rom
+#initramfs roms/cdtv236b51-play.rom,roms/kick323-a1200-47115.rom
 
 # Brufnus patched 235 (FPU works)
 #initramfs roms/cdtv235_exec4010_F0_dual.rom,roms/kick323-a1200-47115.rom

@@ -1,5 +1,5 @@
 schema_version: 1
-id: beta51-play-a1200-fast-page-zero-2026-11-26
+id: beta51-a1200-fast-page-zero-2026-11-26
 author: chris
 captured_at: 2026-11-26
 
@@ -15,7 +15,7 @@ boot:
   config_snapshot: config.txt
   cmdline_snapshot: cmdline.txt
   selected_kernel: "kernel/Emu68.img"
-  initramfs_raw: "roms/cdtv236b51-play.rom,roms/kick323-a1200-47115.rom"
+  initramfs_raw: "roms/cdtv236b51.rom,roms/kick323-a1200-47115.rom"
   overlays:
     - "sdhc,unit0=rw"
     - "z2ram,size=0"
@@ -26,10 +26,10 @@ files:
     role: kernel
     size_bytes: 4239392
     sha256: 9d3fe5bf7f2aad217b34ebb352a97d1541c8e2564bb49ccc171bf2ddf373fa29
-  - path: "roms/cdtv236b51-play.rom"
+  - path: "roms/cdtv236b51.rom"
     role: initramfs_1
     size_bytes: 524288
-    sha256: 5e903872781812a427426247e7fe536025fdb4192bf3a2061e3820198fdd8eee
+    sha256: e8b85a2767c2d98b1703dfd492b8b07850ce63bc21083c55dc3eef5a3d3101de
   - path: "roms/kick323-a1200-47115.rom"
     role: initramfs_2
     size_bytes: 524288
@@ -44,13 +44,13 @@ files:
     sha256: b349bf5803a55c76e1443fefdbab86a641b37c83899b89d05e268f6da85f7c3c
 
 test:
-  status: pending
-  boot_result: untested
-  caffeine_os_boots: untested
-  fpu: untested
+  status: tested
+  boot_result: booted
+  caffeine_os_boots: yes
+  fpu: working
   cd_boots: untested
   cd_access: untested
   audio_cd: untested
   cd_plus_g: untested
   scsi_card: untested
-  notes: "Captured read-only from the active COS SD boot volume. Tests pending."
+  notes: "Boot confirmed and FPU visible. System reports 2 MiB Chip RAM. Remaining tests are pending."
